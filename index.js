@@ -8,9 +8,18 @@ const request = require('request');
  * @param {String} msg Error message to display
  * @param {Integer} status Return code to exit with, defaults to 1
  */
-function exit(msg, status=1){
-    console.log(chalk.bgRed('[Error]') + ' ' +  msg)
+function exit(section, msg, status=1){
+    console.log(chalk.bgRed('[error]') + '[' + section +'] ' + msg)
     process.exit(status);
+}
+
+/**
+ * Function to display a certain error message and quit process
+ * @param {String} msg Error message to display
+ * @param {Integer} status Return code to exit with, defaults to 1
+ */
+function log(section, msg){
+    console.log('[info]' + '[' + section +'] ' + msg)
 }
 
 /**
@@ -89,7 +98,7 @@ const cookieJar = request.jar();
 
 // Check if configuration file exists
 if (!fs.existsSync('./config.json')) {
-    exit('configuration file "config.json" doesn\'t exist!');
+    exit('config', 'configuration file "config.json" doesn\'t exist!');
 }
 
 // Load configuration
@@ -102,10 +111,10 @@ const xbox = require('node-xbox')(config.apiToken);
 const blockedUsers = [];
 const friendUsers = [];
 
-console.log('Trying to authenticate against password protection on www.pceo.online...');
+log('pceo.online', 'Trying to authenticate against password protection...');
 sendAuthenticationRequest(function(success){
     if (success){
-        console.log('Requesting full and up-to-date block list...');
+        log('pceo.online', 'Requesting full and up-to-date block list...');
         getBlockList(function(result){
             if (result){
                 const $ = cheerio.load(result);
@@ -117,20 +126,18 @@ sendAuthenticationRequest(function(success){
                     }
                 });
 
-                console.log('Collected ' + blockedUsers.length + ' gamertags from the block list.')
-                console.log('Get own Xuid from XboxAPI...')
+                log('pceo.online', 'Collected ' + blockedUsers.length + ' gamertags from the block list.')
+                log('XboxAPI', 'Retrieve own personal Xuid...')
                 retrieveOwnXuidFromXboxApi(function(res){
                     const xuid = res.xuid;
                     const gamertag = res.gamertag;
-                    console.log('Retrieve friends of "' + gamertag + '"...')
+                    log('XboxAPI', 'Retrieve all friends of "' + gamertag + '"...')
                     retrieveFriends(xuid, function(res){
-
                         res.forEach(function(friend){
                             friendUsers.push(friend);
                         });
 
-                        console.log('Collected ' + friendUsers.length + ' gamertags from the your friends list')
-                        console.log(friendUsers);
+                        log('XboxAPI', 'Collected ' + friendUsers.length + ' gamertags from the your friends list')
                     });
                 });
             }
