@@ -21,6 +21,9 @@ if (!fs.existsSync('./config.json')) {
 // Load configuration
 const config = require('./config.json');
 
+// Load node-xbox module and pass API token from config
+const xbox = require('node-xbox')(config.apiToken);
+
 /**
  * Function to send the passed password to the password-protected
  * page to retrieve and store a valid cookie
@@ -55,8 +58,39 @@ function getBlockList(cb){
     )
 }
 
-// Empty array to hold all users
+/**
+ * Function to retriev your own personal Xuid
+ * of your Xbox Live gamertag
+ * @param {String|Bool} cb callback
+ */
+function retrieveOwnXuidFromXboxApi(cb){
+    xbox.account.accountXuid(function(error, response){
+        if (!error){
+            return cb(JSON.parse(response))
+        } else {
+            return cb(false);
+        }
+    });
+}
+
+/**
+ * Function to retriev all friends of a certain gamertag (Xuid)
+ * @param {Integer} xuid Xuid of the person you want to query friends list
+ * @param {String|Bool} cb callback
+ */
+function retrieveFriends(xuid, cb){
+    xbox.profile.friends(xuid, function(error, response){
+        if (!error){
+            return cb(JSON.parse(response))
+        } else {
+            return cb(false);
+        }
+    });
+}
+
+// Empty arrays to holds users
 const blockedUsers = [];
+const friendUsers = [];
 
 console.log('Trying to authenticate against password protection on www.pceo.online...');
 sendAuthenticationRequest(function(success){
@@ -73,7 +107,22 @@ sendAuthenticationRequest(function(success){
                     }
                 });
 
-                console.log('Collected ' + blockedUsers.length + ' gamertags from the block list')
+                console.log('Collected ' + blockedUsers.length + ' gamertags from the block list.')
+                console.log('Get own Xuid from XboxAPI...')
+                retrieveOwnXuidFromXboxApi(function(res){
+                    const xuid = res.xuid;
+                    const gamertag = res.gamertag;
+                    console.log('Retrieve friends of "' + gamertag + '"...')
+                    retrieveFriends(xuid, function(res){
+
+                        res.forEach(function(friend){
+                            friendUsers.push(friend);
+                        });
+
+                        console.log('Collected ' + friendUsers.length + ' gamertags from the your friends list')
+                        console.log(friendUsers);
+                    });
+                });
             }
         })
     }
