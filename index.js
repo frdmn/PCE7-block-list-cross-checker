@@ -12,6 +12,11 @@ const PCE7_PASSWORD = args[2];
 // Use cookie jar to store and reuse auth cookie
 const cookieJar = request.jar();
 
+/**
+ * Function to send the passed password to the password-protected
+ * page to retrieve and store a valid cookie
+ * @param {Bool} cb callback
+ */
 function sendAuthenticationRequest(cb){
     request.post(AUTH_URL, {form: { post_password: PCE7_PASSWORD }, jar: cookieJar},
         function (error, response, body) {
@@ -24,6 +29,11 @@ function sendAuthenticationRequest(cb){
     );
 }
 
+/**
+ * Function to retrieve the blocked users by sending a
+ * request that contains the authenticated cookie
+ * @param {String|Bool} cb callback
+ */
 function getBlockList(cb){
     request.get(BLACKLIST_URL, {jar: cookieJar},
         function (error, response, body) {
@@ -36,6 +46,7 @@ function getBlockList(cb){
     )
 }
 
+// Empty array to hold all users
 const blockedUsers = [];
 
 console.log('Trying to authenticate against password protection on www.pceo.online...');
