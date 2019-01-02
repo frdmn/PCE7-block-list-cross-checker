@@ -18,6 +18,7 @@ if (!fs.existsSync('./config.json')) {
     process.exit(1);
 }
 
+// Load configuration
 const config = require('./config.json');
 
 /**
