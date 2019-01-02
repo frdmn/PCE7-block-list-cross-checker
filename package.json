@@ -9,6 +9,7 @@
   "author": "Jonas Friedmann <j@frd.mn>",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^2.4.1",
     "cheerio": "^1.0.0-rc.2",
     "node-xbox": "^0.1.0"
   }

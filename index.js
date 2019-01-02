@@ -1,6 +1,7 @@
-const request = require('request');
+const chalk = require('chalk');
 const cheerio = require('cheerio');
 const fs = require('fs');
+const request = require('request');
 
 // Get password as passed argument
 const args = process.argv;
@@ -12,10 +13,19 @@ const BLACKLIST_URL="http://www.pceo.online/pce7-block-list/"
 // Use cookie jar to store and reuse auth cookie
 const cookieJar = request.jar();
 
+/**
+ * Function to display a certain error message and quit process
+ * @param {String} msg Error message to display
+ * @param {Integer} status Return code to exit with, defaults to 1
+ */
+function exit(msg, status=1){
+    console.log(chalk.bgRed('[Error]') + ' ' +  msg)
+    process.exit(status);
+}
+
 // Check if configuration file exists
-if (!fs.existsSync('./config.json')) {
-    console.log('Error: configuration file "config.json" doesn\'t exist!');
-    process.exit(1);
+if (!fs.existsSync('./config.2json')) {
+    exit('configuration file "config.json" doesn\'t exist!');
 }
 
 // Load configuration
