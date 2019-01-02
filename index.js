@@ -1,5 +1,6 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const fs = require('fs');
 
 // Get password as passed argument
 const args = process.argv;
@@ -7,10 +8,17 @@ const args = process.argv;
 // Configuration
 const AUTH_URL="http://www.pceo.online/wp-login.php?action=postpass"
 const BLACKLIST_URL="http://www.pceo.online/pce7-block-list/"
-const PCE7_PASSWORD = args[2];
 
 // Use cookie jar to store and reuse auth cookie
 const cookieJar = request.jar();
+
+// Check if configuration file exists
+if (!fs.existsSync('./config.json')) {
+    console.log('Error: configuration file "config.json" doesn\'t exist!');
+    process.exit(1);
+}
+
+const config = require('./config.json');
 
 /**
  * Function to send the passed password to the password-protected
@@ -18,7 +26,7 @@ const cookieJar = request.jar();
  * @param {Bool} cb callback
  */
 function sendAuthenticationRequest(cb){
-    request.post(AUTH_URL, {form: { post_password: PCE7_PASSWORD }, jar: cookieJar},
+    request.post(AUTH_URL, {form: { post_password: config.password }, jar: cookieJar},
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 return cb(true);
