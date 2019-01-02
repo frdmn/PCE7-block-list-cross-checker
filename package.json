@@ -1,0 +1,15 @@
+{
+  "name": "pce7-cross-checker",
+  "version": "1.0.0",
+  "description": "PCE7 block list cross checker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonas Friedmann <j@frd.mn>",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "node-xbox": "^0.1.0"
+  }
+}
