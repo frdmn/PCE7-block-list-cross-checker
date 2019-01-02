@@ -86,6 +86,21 @@ function retrieveFriends(xuid, cb){
     });
 }
 
+/**
+ * Function to retrieve all followers of a certain gamertag (Xuid)
+ * @param {Integer} xuid Xuid of the person you want to query followers list
+ * @param {String|Bool} cb callback
+ */
+function retrieveFollowers(xuid, cb){
+    xbox.profile.followers(xuid, function(error, response){
+        if (!error){
+            return cb(JSON.parse(response))
+        } else {
+            return cb(false);
+        }
+    });
+}
+
 // Get password as passed argument
 const args = process.argv;
 
@@ -110,6 +125,7 @@ const xbox = require('node-xbox')(config.apiToken);
 // Empty arrays to holds users
 const blockedUsers = [];
 const friendUsers = [];
+const followerUsers = [];
 
 log('pceo.online', 'Trying to authenticate against password protection...');
 sendAuthenticationRequest(function(success){
@@ -138,6 +154,14 @@ sendAuthenticationRequest(function(success){
                         });
 
                         log('XboxAPI', 'Collected ' + friendUsers.length + ' gamertags from the your friends list')
+                        log('XboxAPI', 'Retrieve all followers of "' + gamertag + '"...')
+                        retrieveFollowers(xuid, function(res){
+                            res.forEach(function(friend){
+                                followerUsers.push(friend);
+                            });
+
+                            log('XboxAPI', 'Collected ' + followerUsers.length + ' gamertags from the your followers list')
+                        });
                     });
                 });
             }
