@@ -5,12 +5,12 @@ const request = require('request');
 
 /**
  * Function to display a certain error message and quit process
+ * @param {String} section Current section, used as prefix
  * @param {String} msg Error message to display
  * @param {Integer} status Return code to exit with, defaults to 1
  */
-function exit(section, msg, status=1){
-    console.log(chalk.red('[error]') + '[' + section +'] ' + msg)
-    process.exit(status);
+function error(section, msg){
+    console.log(chalk.red('[error]') + '[' + section +'] ' + msg);
 }
 
 /**
@@ -29,6 +29,17 @@ function log(section, msg){
  */
 function logMatch(msg){
     console.log('[success]' + '[compare] ' + chalk.bgRed(msg));
+}
+
+/**
+ * Function to display an error message and exit the process
+ * @param {String} section Current section, used as prefix
+ * @param {String} msg Error message to display
+ * @param {Integer} status Return code to exit with, defaults to 1
+ */
+function exit(section, msg, status=1){
+    error(section, msg)
+    process.exit(status);
 }
 
 /**
