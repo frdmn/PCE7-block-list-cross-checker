@@ -9,7 +9,7 @@ const request = require('request');
  * @param {Integer} status Return code to exit with, defaults to 1
  */
 function exit(section, msg, status=1){
-    console.log(chalk.bgRed('[error]') + '[' + section +'] ' + msg)
+    console.log(chalk.red('[error]') + '[' + section +'] ' + msg)
     process.exit(status);
 }
 
@@ -20,6 +20,15 @@ function exit(section, msg, status=1){
  */
 function log(section, msg){
     console.log('[info]' + '[' + section +'] ' + msg)
+}
+
+/**
+ * Function to display a certain error message and quit process
+ * @param {String} msg Error message to display
+ * @param {Integer} status Return code to exit with, defaults to 1
+ */
+function logMatch(msg){
+    console.log('[success]' + '[compare] ' + chalk.bgRed(msg));
 }
 
 /**
@@ -104,7 +113,7 @@ function retrieveFollowers(xuid, cb){
 // Get password as passed argument
 const args = process.argv;
 
-// Configuration
+// Variables
 const AUTH_URL="http://www.pceo.online/wp-login.php?action=postpass"
 const BLACKLIST_URL="http://www.pceo.online/pce7-block-list/"
 
@@ -142,7 +151,7 @@ sendAuthenticationRequest(function(success){
                     }
                 });
 
-                log('pceo.online', 'Collected ' + blockedUsers.length + ' gamertags from the block list.')
+                log('pceo.online', '... collected ' + blockedUsers.length + ' gamertags from the block list.')
                 log('XboxAPI', 'Retrieve own personal Xuid...')
                 retrieveOwnXuidFromXboxApi(function(res){
                     const xuid = res.xuid;
@@ -150,17 +159,29 @@ sendAuthenticationRequest(function(success){
                     log('XboxAPI', 'Retrieve all friends of "' + gamertag + '"...')
                     retrieveFriends(xuid, function(res){
                         res.forEach(function(friend){
-                            friendUsers.push(friend);
+                            friendUsers.push(friend.Gamertag);
                         });
 
-                        log('XboxAPI', 'Collected ' + friendUsers.length + ' gamertags from the your friends list')
+                        log('XboxAPI', '... collected ' + friendUsers.length + ' gamertags from the your friends list')
                         log('XboxAPI', 'Retrieve all followers of "' + gamertag + '"...')
                         retrieveFollowers(xuid, function(res){
-                            res.forEach(function(friend){
-                                followerUsers.push(friend);
+                            res.forEach(function(follower){
+                                followerUsers.push(follower.Gamertag);
                             });
 
-                            log('XboxAPI', 'Collected ' + followerUsers.length + ' gamertags from the your followers list')
+                            log('XboxAPI', '... collected ' + followerUsers.length + ' gamertags from the your followers list')
+                            log('compare', 'Cross-checking blocked users against followers and friends...')
+                            blockedUsers.forEach(function(blockedUser){
+                                // Check if "blockedUser" is a friend
+                                if (friendUsers.indexOf(blockedUser) > -1) {
+                                    logMatch('Found "' + blockedUser + '" in your friends list! Remove and block them immediately!')
+                                }
+
+                                // Check if "blockedUser" is a follower
+                                if (followerUsers.indexOf(blockedUser) > -1) {
+                                    logMatch('Found "' + blockedUser + '" in your followers list! Block them immediately!')
+                                }
+                            });
                         });
                     });
                 });
