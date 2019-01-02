@@ -3,16 +3,6 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const request = require('request');
 
-// Get password as passed argument
-const args = process.argv;
-
-// Configuration
-const AUTH_URL="http://www.pceo.online/wp-login.php?action=postpass"
-const BLACKLIST_URL="http://www.pceo.online/pce7-block-list/"
-
-// Use cookie jar to store and reuse auth cookie
-const cookieJar = request.jar();
-
 /**
  * Function to display a certain error message and quit process
  * @param {String} msg Error message to display
@@ -22,17 +12,6 @@ function exit(msg, status=1){
     console.log(chalk.bgRed('[Error]') + ' ' +  msg)
     process.exit(status);
 }
-
-// Check if configuration file exists
-if (!fs.existsSync('./config.2json')) {
-    exit('configuration file "config.json" doesn\'t exist!');
-}
-
-// Load configuration
-const config = require('./config.json');
-
-// Load node-xbox module and pass API token from config
-const xbox = require('node-xbox')(config.apiToken);
 
 /**
  * Function to send the passed password to the password-protected
@@ -97,6 +76,27 @@ function retrieveFriends(xuid, cb){
         }
     });
 }
+
+// Get password as passed argument
+const args = process.argv;
+
+// Configuration
+const AUTH_URL="http://www.pceo.online/wp-login.php?action=postpass"
+const BLACKLIST_URL="http://www.pceo.online/pce7-block-list/"
+
+// Use cookie jar to store and reuse auth cookie
+const cookieJar = request.jar();
+
+// Check if configuration file exists
+if (!fs.existsSync('./config.json')) {
+    exit('configuration file "config.json" doesn\'t exist!');
+}
+
+// Load configuration
+const config = require('./config.json');
+
+// Load node-xbox module and pass API token from config
+const xbox = require('node-xbox')(config.apiToken);
 
 // Empty arrays to holds users
 const blockedUsers = [];
