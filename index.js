@@ -122,7 +122,7 @@ const cookieJar = request.jar();
 
 // Check if configuration file exists
 if (!fs.existsSync('./config.json')) {
-    exit('config', 'configuration file "config.json" doesn\'t exist!');
+    exit('config', 'configuration file "config.json" doesn\'t exist. Check instructions in README.md!');
 }
 
 // Load configuration
