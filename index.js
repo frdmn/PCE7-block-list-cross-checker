@@ -72,7 +72,7 @@ function retrieveOwnXuidFromXboxApi(cb){
 }
 
 /**
- * Function to retriev all friends of a certain gamertag (Xuid)
+ * Function to retrieves all friends of a certain gamertag (Xuid)
  * @param {Integer} xuid Xuid of the person you want to query friends list
  * @param {String|Bool} cb callback
  */
