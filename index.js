@@ -113,7 +113,7 @@ function retrieveFollowers(xuid, cb){
 // Get password as passed argument
 const args = process.argv;
 
-// Variables
+// Configuration
 const AUTH_URL="http://www.pceo.online/wp-login.php?action=postpass"
 const BLACKLIST_URL="http://www.pceo.online/pce7-block-list/"
 
